@@ -4,7 +4,7 @@ const request = require('supertest');
 const app = require('../lib/app');
 const connect = require('../lib/utils/connect');
 const mongoose = require('mongoose');
-// const User = require('../lib/model/User');
+const User = require('../lib/model/User');
 
 describe('app routes', () => {
   beforeAll(() => {
@@ -28,5 +28,19 @@ describe('app routes', () => {
           username: 'test'
         });
       });
+  });
+  it('can log in a user', async() => {
+    await request(app)
+      .post('/api/v1/auth/signup')
+      .send({ username: 'test', password: 'test' });
+    const res = await request(app)
+      .post('/api/v1/auth/login')
+      .send({ username: 'test', password: 'test' })
+      .expect(200);
+      
+    expect(res.body).toEqual({
+      _id: expect.any(String),
+      username: 'test'
+    });
   });
 });
